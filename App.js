@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlight, FlatList } from 'react-native';
 import ListItem from "./components/ListItem";
 import { Logs } from 'expo';
 
@@ -63,19 +63,22 @@ export default function App() {
 
       </View>
       <View style={{ flex: 1, width: "100%" }}>
-        <ScrollView style={styles.bordered}>
-          {
-            todos.map((todo, index) => {
-              return (
-                <ListItem
-                  key={index}
-                  index={index}
-                  todo={todo}
-                  onClickedItem={removeTodo}
-                />)
-            })
-          }
-        </ScrollView>
+
+        <FlatList
+          style={styles.bordered}
+          data={todos}
+          keyExtractor={(item, index) => index}
+          renderItem={
+            ({ item, index }) => {
+              //debugger;
+              return (<ListItem
+                index={index}
+                todo={item}
+                onClickedItem={removeTodo}
+              />)
+            }}
+        />
+
       </View>
     </View>
   );
