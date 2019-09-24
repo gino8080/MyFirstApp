@@ -26,6 +26,8 @@ export default function App() {
   }
 
   const addNewTodo = () => {
+    if (text.length === 0) return;
+
     console.log("addNewTodo")
     const newTodos = [...todos, text];
     //newTodos.push(text);
@@ -49,8 +51,13 @@ export default function App() {
         <TextInput
           value={text}
           style={styles.input}
+          placeholder="Scrivi il tuo todo.."
           //onChangeText={(newText) => { handleTextChange(newText) }}
+          enablesReturnKeyAutomatically
+          returnKeyType="done"
+          returnKeyLabel="Add"
           onChangeText={handleTextChange}
+          onSubmitEditing={addNewTodo}
         />
         <Button disabled={text.length === 0} title="Add" onPress={addNewTodo}></Button>
 
