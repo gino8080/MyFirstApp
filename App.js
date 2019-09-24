@@ -4,6 +4,8 @@ import ListItem from "./components/ListItem";
 import { Logs } from 'expo';
 import { stubTodos } from "./data/todos";
 
+import ModalDatePicker from "react-native-modal-datetime-picker";
+
 if (__DEV__) {
   // https://github.com/expo/expo/issues/2623#issuecomment-441364587
   const isRemoteDebuggingEnabled = typeof atob !== 'undefined';
@@ -19,7 +21,9 @@ if (__DEV__) {
 export default function App() {
 
   const [text, setText] = React.useState("");
-  const [todos, setTodos] = React.useState(stubTodos)
+  const [todos, setTodos] = React.useState(stubTodos);
+  const [showCalendar, setShowCalendar] = React.useState(false);
+  const [selectedDate, setSelectedDate] = React.useState(undefined);
 
   const handleTextChange = (newText) => {
     console.log("ecco il", "newText", newText)
@@ -33,14 +37,16 @@ export default function App() {
     const newTodos = [...todos, createTodo()];
     //newTodos.push(text);
     setTodos(newTodos);
-    console.log("todos", todos)
+    console.log("todos", todos);
+
     setText("");
+    setSelectedDate(undefined)
   }
 
   const createTodo = () => {
     return {
       id: Math.random().toString(),
-      date: new Date(),
+      date: selectedDate || new Date(),
       text: text,
       done: false
     }
@@ -66,6 +72,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+
       <View style={{ flexDirection: "row", width: "100%", borderColor: "green", borderWidth: 3 }}>
         <TextInput
           value={text}
@@ -78,9 +85,12 @@ export default function App() {
           onChangeText={handleTextChange}
           onSubmitEditing={addNewTodo}
         />
-        <Button disabled={text.length === 0} title="Add" onPress={addNewTodo}></Button>
 
+        <Button title="Data" onPress={() => setShowCalendar(true)}></Button>
       </View>
+
+      <Button disabled={text.length === 0} title="Add" onPress={addNewTodo}></Button>
+
       <View style={{ flex: 1, width: "100%" }}>
 
         <FlatList
@@ -100,6 +110,15 @@ export default function App() {
         />
 
       </View>
+
+      <ModalDatePicker
+        isVisible={showCalendar}
+        onCancel={() => setShowCalendar(false)}
+        onConfirm={(date) => {
+          console.log("onConfirm", date);
+          setSelectedDate(date)
+        }}
+      />
     </View>
   );
 }
