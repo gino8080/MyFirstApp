@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View, TextInput, ScrollView, TouchableHighlight, FlatList, ActivityIndicator } from 'react-native';
-import { Button, Text } from "native-base";
+import { Button, Text, Container, Header, Footer, Content, Body, Title, Item, Label, Input, Icon } from "native-base";
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import ListItem from "./components/ListItem";
 import { Logs, AppLoading } from 'expo';
 import { stubTodos } from "./data/todos";
-import { formatDate } from "./components/helpers";
+import { showAlert } from "./components/helpers";
 import ModalDatePicker from "react-native-modal-datetime-picker";
 import Storage from "./data/Storage";
 
@@ -100,12 +100,20 @@ export default function App() {
   }
 
   const removeTodo = (index) => {
-    console.log("removeTodo", index)
-    const _todos = [...todos];
-    _todos.splice(index, 1);
 
-    setTodos(_todos);
-    Storage.set("todos", _todos)
+    showAlert({
+      message: "Sei sicuro che vuoi cancellare il todo " + todos[index].text,
+      onOk: () => {
+        console.log("removeTodo", index)
+        const _todos = [...todos];
+        _todos.splice(index, 1);
+
+        setTodos(_todos);
+        Storage.set("todos", _todos)
+      }
+
+    })
+
   }
 
   const changeStatus = (index) => {
@@ -123,40 +131,37 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <Container>
+      <Header>
+        <Body>
+          <Title>ToDo App!</Title>
+        </Body>
+      </Header>
+      <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 10 }}>
+        <Icon name={selectedDate ? "notifications" : "notifications-off"} active onPress={() => { setShowCalendar(true); }}
+          style={{ margin: 10, color: selectedDate ? "yellow" : "grey" }} />
+        <Item rounded style={{ flex: 1, marginHorizontal: 10 }}>
+          <Input value={text}
+            clearButtonMode="always"
+            placeholder="Scrivi il tuo todo.."
+            //onChangeText={(newText) => { handleTextChange(newText) }}
+            enablesReturnKeyAutomatically
+            returnKeyType="done"
+            returnKeyLabel="Add"
+            onChangeText={handleTextChange}
+            onSubmitEditing={addNewTodo} />
 
-      <View style={{ flexDirection: "row", width: "100%", borderColor: "green", borderWidth: 3 }}>
-        <TextInput
-          value={text}
-          style={styles.input}
-          placeholder="Scrivi il tuo todo.."
-          //onChangeText={(newText) => { handleTextChange(newText) }}
-          enablesReturnKeyAutomatically
-          returnKeyType="done"
-          returnKeyLabel="Add"
-          onChangeText={handleTextChange}
-          onSubmitEditing={addNewTodo}
-        />
-
-        <Button title="Data" onPress={() => {
-          setShowCalendar(true);
-          console.log("press claendar button", showCalendar)
-        }
-        }></Button>
+        </Item>
+        <Icon name="add-circle" active style={{ margin: 10, color: text.length === 0 ? "grey" : "blue" }} onPress={addNewTodo} />
       </View>
-      <Text>Data : {formatDate(selectedDate)}</Text>
 
-      <Button disabled={text.length === 0} primary onPress={addNewTodo}><Text> Add </Text></Button>
-
-
-      <View style={{ flex: 1, width: "100%" }}>
-
+      <Content scrollEnabled={true}>
         {
           !todos ?
             <ActivityIndicator color="orange" size="large" />
             :
             <FlatList
-              style={styles.bordered}
+              //style={styles.bordered}
               data={todos}
               keyExtractor={(item, index) => `todo-${item.id}`}
               renderItem={
@@ -174,7 +179,7 @@ export default function App() {
 
 
 
-      </View>
+      </Content>
 
       <ModalDatePicker
         isVisible={showCalendar}
@@ -185,7 +190,7 @@ export default function App() {
           setShowCalendar(false);
         }}
       />
-    </View>
+    </Container>
   );
 }
 

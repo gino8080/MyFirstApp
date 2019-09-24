@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, Button, Switch } from "react-native";
+import { View, StyleSheet, Switch, TouchableOpacity, Platform } from "react-native";
 import { formatDate } from "./helpers"
+import { Container, Button, Header, Content, List, ListItem as ListIt, Left, Body, Right, Thumbnail, Text, Icon } from 'native-base';
 
 const ListItem = ({ index, todo, onClickedItem, onChangeStatus }) => {
 
@@ -11,36 +12,32 @@ const ListItem = ({ index, todo, onClickedItem, onChangeStatus }) => {
   }
 
   return (
-    <View key={"item" + index} style={styles.item}>
-
-      <View style={{ flex: 1 }} >
-        <Text>{todo.done ? "Fatto!" : "Da fare"}</Text>
-        <Switch
-          value={todo.done}
-          onValueChange={(done) => onChangeStatus(index)}
-        //onValueChange={onChangeStatus}
-        />
-      </View>
-
-      <View style={{ flex: 2 }}>
-        <Text>{index} - {todo.text}</Text>
-        <Text> {formatDate(todo.date)}</Text>
-      </View>
-
-      <View style={{ flex: 1 }} >
-        <Button title="rimuovi" onPress={onClickedList} />
-      </View>
-    </View>
-  )
+    <ListIt avatar>
+      <Left>
+        <TouchableOpacity onPress={() => onChangeStatus(index)}>
+          {
+            todo.done ?
+              <Icon name="checkmark-circle-outline" style={{ ...styles.icon, color: "green" }} />
+              :
+              <Icon name="radio-button-off" style={styles.icon} />
+          }</TouchableOpacity>
+      </Left>
+      <Body>
+        <Text>{todo.text}</Text>
+        <Text note> {formatDate(todo.date)}</Text>
+      </Body>
+      <Right>
+        <Icon name="remove-circle" onPress={onClickedList}
+          style={[styles.icon, { color: "#888" }]} />
+      </Right>
+    </ListIt>)
 
 }
 
 const styles = StyleSheet.create({
-  item: {
-    flexDirection: "row",
-    padding: 10,
-    borderBottomColor: "black",
-    borderBottomWidth: 1
+  icon: {
+    fontSize: Platform.OS === "android" ? 30 : 25,
+    width: 25
   }
 })
 
