@@ -11,13 +11,13 @@
 export const stubTodos = [
   {
     id: 1,
-    date: "14/07/2019",
+    date: new Date(),
     text: "comprare il latte",
-    done: false
+    done: true
   },
   {
     id: 2,
-    date: "21/08/2019",
+    date: new Date(),
     text: "Fare la spesa",
     done: false
   }
