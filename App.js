@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlight, FlatList } from 'react-native';
 import ListItem from "./components/ListItem";
 import { Logs } from 'expo';
+import { stubTodos } from "./data/todos";
 
 if (__DEV__) {
   // https://github.com/expo/expo/issues/2623#issuecomment-441364587
@@ -18,7 +19,7 @@ if (__DEV__) {
 export default function App() {
 
   const [text, setText] = React.useState("");
-  const [todos, setTodos] = React.useState(["Comprare il latte", "Fare qualcosa"])
+  const [todos, setTodos] = React.useState(stubTodos)
 
   const handleTextChange = (newText) => {
     console.log("ecco il", "newText", newText)
@@ -29,11 +30,20 @@ export default function App() {
     if (text.length === 0) return;
 
     console.log("addNewTodo")
-    const newTodos = [...todos, text];
+    const newTodos = [...todos, createTodo()];
     //newTodos.push(text);
     setTodos(newTodos);
     console.log("todos", todos)
     setText("");
+  }
+
+  const createTodo = () => {
+    return {
+      id: Math.random().toString(),
+      date: new Date(),
+      text: text,
+      done: false
+    }
   }
 
   const removeTodo = (index) => {
@@ -67,7 +77,7 @@ export default function App() {
         <FlatList
           style={styles.bordered}
           data={todos}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => `todo-${item.id}`}
           renderItem={
             ({ item, index }) => {
               //debugger;

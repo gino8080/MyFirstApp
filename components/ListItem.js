@@ -11,7 +11,7 @@ const ListItem = ({ key, todo, onClickedItem }) => {
 
   return (
     <View key={"item" + key} style={styles.item}>
-      <Text style={{ flex: 2 }} >{key} - {todo}</Text>
+      <Text style={{ flex: 2 }} >{key} - {todo.text}</Text>
       <View style={{ flex: 1 }} >
         <Button title="rimuovi" onPress={onClickedList} />
       </View>
