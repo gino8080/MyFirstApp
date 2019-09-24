@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlight, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlight, FlatList, ActivityIndicator } from 'react-native';
 import ListItem from "./components/ListItem";
 import { Logs } from 'expo';
 import { stubTodos } from "./data/todos";
@@ -22,7 +22,7 @@ if (__DEV__) {
 export default function App() {
 
   const [text, setText] = React.useState("");
-  const [todos, setTodos] = React.useState([]);
+  const [todos, setTodos] = React.useState(undefined);
   const [showCalendar, setShowCalendar] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState(undefined);
 
@@ -32,21 +32,27 @@ export default function App() {
     () => {
       console.log("UseEffect App.js");
 
-      Storage.get("todos")
-        .then(_todos => {
-          console.log("_todos", _todos);
-          setTodos(_todos || [])
-        })
-        .catch(error => {
-          console.error(error);
-        })
-        .finally(() => {
-          console.log("Finally!")
-        });
+      setTimeout(getLocalTodos, 500)
+
 
     },
     []
   )
+
+  const getLocalTodos = () => {
+    Storage.get("todos")
+      .then(_todos => {
+        console.log("_todos", _todos);
+        setTodos(_todos || [])
+      })
+      .catch(error => {
+        console.error(error);
+        setTodos([])
+      })
+      .finally(() => {
+        console.log("Finally!")
+      });
+  }
 
   const handleTextChange = (newText) => {
     console.log("ecco il", "newText", newText)
@@ -62,6 +68,7 @@ export default function App() {
     setTodos(newTodos);
 
     Storage.set("todos", newTodos)
+
     //reset fields
     setText("");
     setSelectedDate(undefined)
@@ -123,21 +130,28 @@ export default function App() {
 
       <View style={{ flex: 1, width: "100%" }}>
 
-        <FlatList
-          style={styles.bordered}
-          data={todos}
-          keyExtractor={(item, index) => `todo-${item.id}`}
-          renderItem={
-            ({ item, index }) => {
-              //debugger;
-              return (<ListItem
-                index={index}
-                todo={item}
-                onClickedItem={removeTodo}
-                onChangeStatus={changeStatus}
-              />)
-            }}
-        />
+        {
+          !todos ?
+            <ActivityIndicator color="orange" size="large" />
+            :
+            <FlatList
+              style={styles.bordered}
+              data={todos}
+              keyExtractor={(item, index) => `todo-${item.id}`}
+              renderItem={
+                ({ item, index }) => {
+                  //debugger;
+                  return (<ListItem
+                    index={index}
+                    todo={item}
+                    onClickedItem={removeTodo}
+                    onChangeStatus={changeStatus}
+                  />)
+                }}
+            />
+        }
+
+
 
       </View>
 
