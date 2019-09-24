@@ -55,6 +55,15 @@ export default function App() {
 
   }
 
+  const changeStatus = (index) => {
+    console.log("changeStatus", index);
+
+    const _todos = [...todos];
+    _todos[index].done = !_todos[index].done;
+    setTodos(_todos);
+
+  }
+
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: "row", width: "100%", borderColor: "green", borderWidth: 3 }}>
@@ -85,6 +94,7 @@ export default function App() {
                 index={index}
                 todo={item}
                 onClickedItem={removeTodo}
+                onChangeStatus={changeStatus}
               />)
             }}
         />

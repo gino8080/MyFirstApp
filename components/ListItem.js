@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, Switch } from "react-native";
 import moment from "moment";
 
-const ListItem = ({ index, todo, onClickedItem }) => {
+const ListItem = ({ index, todo, onClickedItem, onChangeStatus }) => {
 
   onClickedList = () => {
     if (onClickedItem) {
@@ -14,18 +14,12 @@ const ListItem = ({ index, todo, onClickedItem }) => {
     <View key={"item" + index} style={styles.item}>
 
       <View style={{ flex: 1 }} >
-        { /* Semplice ternaria stampèo del testo*/}
         <Text>{todo.done ? "Fatto!" : "Da fare"}</Text>
-        {
-          /* Ternaria due diversi componenti  */
-          todo.done ? <Text>FATTO!</Text> : <Text>NON FATTO</Text>
-        }
-
-        {
-          /* Solo se si verifica ( true ) stampo il componente  */
-          todo.done && <Text>FATTO!</Text>
-        }
-
+        <Switch
+          value={todo.done}
+          onValueChange={(done) => onChangeStatus(index)}
+        //onValueChange={onChangeStatus}
+        />
       </View>
 
       <View style={{ flex: 2 }}>
