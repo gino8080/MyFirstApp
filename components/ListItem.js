@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Button, Switch } from "react-native";
-import moment from "moment";
+import { formatDate } from "./helpers"
 
 const ListItem = ({ index, todo, onClickedItem, onChangeStatus }) => {
 
@@ -24,7 +24,7 @@ const ListItem = ({ index, todo, onClickedItem, onChangeStatus }) => {
 
       <View style={{ flex: 2 }}>
         <Text>{index} - {todo.text}</Text>
-        <Text> {moment(todo.date).fromNow()}</Text>
+        <Text> {formatDate(todo.date)}</Text>
       </View>
 
       <View style={{ flex: 1 }} >

@@ -3,8 +3,9 @@ import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlig
 import ListItem from "./components/ListItem";
 import { Logs } from 'expo';
 import { stubTodos } from "./data/todos";
-
+import { formatDate } from "./components/helpers";
 import ModalDatePicker from "react-native-modal-datetime-picker";
+import Storage from "./data/Storage";
 
 if (__DEV__) {
   // https://github.com/expo/expo/issues/2623#issuecomment-441364587
@@ -21,9 +22,31 @@ if (__DEV__) {
 export default function App() {
 
   const [text, setText] = React.useState("");
-  const [todos, setTodos] = React.useState(stubTodos);
+  const [todos, setTodos] = React.useState([]);
   const [showCalendar, setShowCalendar] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState(undefined);
+
+  //sostiuisce il vecchio ComponentDidMount + ComponentDidUpdate + ComponentWillUnmount
+
+  React.useEffect(
+    () => {
+      console.log("UseEffect App.js");
+
+      Storage.get("todos")
+        .then(_todos => {
+          console.log("_todos", _todos);
+          setTodos(_todos || [])
+        })
+        .catch(error => {
+          console.error(error);
+        })
+        .finally(() => {
+          console.log("Finally!")
+        });
+
+    },
+    []
+  )
 
   const handleTextChange = (newText) => {
     console.log("ecco il", "newText", newText)
@@ -37,10 +60,12 @@ export default function App() {
     const newTodos = [...todos, createTodo()];
     //newTodos.push(text);
     setTodos(newTodos);
-    console.log("todos", todos);
 
+    Storage.set("todos", newTodos)
+    //reset fields
     setText("");
     setSelectedDate(undefined)
+    setShowCalendar(false);
   }
 
   const createTodo = () => {
@@ -58,7 +83,7 @@ export default function App() {
     _todos.splice(index, 1);
 
     setTodos(_todos);
-
+    Storage.set("todos", _todos)
   }
 
   const changeStatus = (index) => {
@@ -86,8 +111,13 @@ export default function App() {
           onSubmitEditing={addNewTodo}
         />
 
-        <Button title="Data" onPress={() => setShowCalendar(true)}></Button>
+        <Button title="Data" onPress={() => {
+          setShowCalendar(true);
+          console.log("press claendar button", showCalendar)
+        }
+        }></Button>
       </View>
+      <Text>Data : {formatDate(selectedDate)}</Text>
 
       <Button disabled={text.length === 0} title="Add" onPress={addNewTodo}></Button>
 
@@ -116,7 +146,8 @@ export default function App() {
         onCancel={() => setShowCalendar(false)}
         onConfirm={(date) => {
           console.log("onConfirm", date);
-          setSelectedDate(date)
+          setSelectedDate(date);
+          setShowCalendar(false);
         }}
       />
     </View>
