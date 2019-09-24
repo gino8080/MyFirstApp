@@ -1,7 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableHighlight, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TextInput, ScrollView, TouchableHighlight, FlatList, ActivityIndicator } from 'react-native';
+import { Button, Text } from "native-base";
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
 import ListItem from "./components/ListItem";
-import { Logs } from 'expo';
+import { Logs, AppLoading } from 'expo';
 import { stubTodos } from "./data/todos";
 import { formatDate } from "./components/helpers";
 import ModalDatePicker from "react-native-modal-datetime-picker";
@@ -21,23 +24,35 @@ if (__DEV__) {
 
 export default function App() {
 
+  const [isReady, setIsReady] = React.useState(false);
+
   const [text, setText] = React.useState("");
   const [todos, setTodos] = React.useState(undefined);
   const [showCalendar, setShowCalendar] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState(undefined);
+
 
   //sostiuisce il vecchio ComponentDidMount + ComponentDidUpdate + ComponentWillUnmount
 
   React.useEffect(
     () => {
       console.log("UseEffect App.js");
-
-      setTimeout(getLocalTodos, 500)
-
+      loadFonts();
 
     },
     []
   )
+
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      ...Ionicons.font
+    })
+
+    setIsReady(true)
+    setTimeout(getLocalTodos, 500)
+  }
 
   const getLocalTodos = () => {
     Storage.get("todos")
@@ -102,6 +117,11 @@ export default function App() {
 
   }
 
+
+  if (!isReady) {
+    return <AppLoading />
+  }
+
   return (
     <View style={styles.container}>
 
@@ -126,7 +146,8 @@ export default function App() {
       </View>
       <Text>Data : {formatDate(selectedDate)}</Text>
 
-      <Button disabled={text.length === 0} title="Add" onPress={addNewTodo}></Button>
+      <Button disabled={text.length === 0} primary onPress={addNewTodo}><Text> Add </Text></Button>
+
 
       <View style={{ flex: 1, width: "100%" }}>
 
